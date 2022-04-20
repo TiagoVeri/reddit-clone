@@ -1,0 +1,5 @@
+package com.clone.reddit.repository;
+
+public interface CommentRepository {
+
+}
