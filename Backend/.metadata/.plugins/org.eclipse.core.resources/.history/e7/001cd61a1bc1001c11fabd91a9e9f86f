@@ -1,0 +1,5 @@
+package com.clone.reddit.config;
+
+public class SecurityConfig {
+
+}

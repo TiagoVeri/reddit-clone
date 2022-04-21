@@ -1,0 +1,16 @@
+package com.clone.reddit.service;
+
+import org.springframework.stereotype.Service;
+
+import com.clone.reddit.dto.RegisterRequest;
+import com.clone.reddit.model.User;
+
+@Service
+public class AuthService {
+	
+	public void signup(RegisterRequest registerRequest) {
+		User user = new User();
+		user.set
+	}
+
+}

@@ -1,0 +1,5 @@
+package com.clone.reddit.service;
+
+public class AuthService {
+
+}
