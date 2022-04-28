@@ -1,0 +1,5 @@
+package com.clone.reddit.dto;
+
+public class LoginRequest {
+
+}

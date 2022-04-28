@@ -1,0 +1,20 @@
+package com.clone.reddit.security;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Jwts;
+
+@Service
+public class JwtProvider {
+
+	public String generateToken(Authentication authentication) {
+		User principal = (User) authentication.getPrincipal();
+		return Jwts.builder()
+				.setSubjects(principal.getUsername()
+				.signWith(getPrivateKey())
+				.compact();
+
+	}
+}
