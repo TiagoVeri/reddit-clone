@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.clone.reddit.security.JwtAuthenticationFilter;
+
 import org.springframework.context.annotation.Configuration;
 
 
@@ -21,6 +25,7 @@ import lombok.AllArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final UserDetailsService userDetailsService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -32,14 +37,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/h2-console/**")
+                .permitAll()
                 .antMatchers("/api/auth/**")
+                .permitAll()
+                .antMatchers("/api/subreddit")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
         
         //To show h2-console iframes
         httpSecurity.headers().frameOptions().disable();
+        
+        //Tries check for the access token before trying username and Password
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
     
     @Override
