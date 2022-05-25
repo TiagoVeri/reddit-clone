@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.clone.reddit.dto.RefreshTokenRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +39,7 @@ public class AuthService {
 	private final MailService mailService;
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
+	private final RefreshTokenService refreshTokenService;
 	
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
@@ -100,7 +102,22 @@ public class AuthService {
 		//Check if user is logged or not
 		SecurityContextHolder.getContext().setAuthentication(authenticate);
 		String token = jwtProvider.generateToken(authenticate);
-		return new AuthenticationResponse(token, loginRequest.getUsername());
+		return AuthenticationResponse.builder()
+				.authenticationToken(token)
+				.refreshToken(refreshTokenService.generateRefreshToken().getToken())
+				.expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+				.username(loginRequest.getUsername())
+				.build();
 	}
 
+	public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+		refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+		String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+		return AuthenticationResponse.builder()
+				.authenticationToken(token)
+				.refreshToken(refreshTokenRequest.getRefreshToken())
+				.expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+				.username(refreshTokenRequest.getUsername())
+				.build();
+	}
 }
